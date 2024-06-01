@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap');
+
+        * {
+            font-family: Syne;
+        }
+        body {
+            background-color: #dfe4ea;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+}
+
+.container {
+    background-color: white;
+    width: 400px;
+    margin: auto auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: grid;
+}
+
+h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-bottom: 3px;
+  margin-top: 5px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="submit"] {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+input[type="submit"] {
+  background-color: #3c6382;
+  color: #fff;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #3c6382;
+}
+
+a {
+    display: block;
+    text-decoration: none;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    background-color: #3c6382;
+    cursor: pointer;
+    color: white;
+    text-align: center;
+    font-size: 15px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Create New Account</h2>
+        <form id="register-form" action="/register" method="POST">
+            <label for="new-username">Username</label>
+            <input type="text" id="new-username" name="new-username" required>
+            <label for="new-password">Password</label>
+            <input type="password" id="new-password" name="new-password" required>
+            <input type="submit" value="Register">
+            <a href="index.html">Back to the Main Page</a>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("register-form").addEventListener("submit", function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+    // Получаем данные из формы
+    var formData = {
+        username: document.getElementById("new-username").value,
+        password: document.getElementById("new-password").value
+    };
+
+    // Преобразуем данные в JSON
+    var jsonData = JSON.stringify(formData);
+    console.log("Data sent to server:", jsonData); // Логируем данные, отправляемые на сервер
+
+    // Отправляем запрос на сервер для регистрации
+    fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json" // Указываем тип контента как JSON
+        },
+        body: jsonData // Отправляем данные в виде JSON
+    })
+    .then(response => {
+        if (response.ok) {
+            // Если регистрация успешна, перенаправляем на страницу входа
+            window.location.href = "/login.html";
+        } else {
+            // Если регистрация не удалась, выводим сообщение об ошибке
+            alert("Registration failed. Please try again.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        // Обработка других ошибок
+    });
+});
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>CARDFLIP</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+      <script src="requirejs-config.js" data-main="index.js" defer></script>
+      <script type="module" src="client.js" defer></script>
+      <script type="module" src="cards.js"></script>
+      <!-- <script src="index.js"></script> -->
+      <link rel="stylesheet" href="index.css"/>
+      <!-- <link rel="stylesheet" href="style.css"/> -->
+    </head>
+
+    <body>
+
+      <div class="container">
+        <div class="buttons-cont">
+          <div class="but-left">
+            <div class="my-collections" title="View your collections">
+              <button id="my-collections">My Collections</button>
+            </div>
+      
+            <div class="recs" title="View collections recommended by the website"> 
+              <button id="recs">Recommendations</button>
+            </div>
+          </div>
+      
+          <div class="but-right">
+            <div class="game-mode" title="Enter game mode">
+              <button id="game-mode">Game Mode</button>
+            </div>
+      
+            <div class="log-in" title="Log in or register"> 
+              <button id="log-in" style="visibility: hidden"><a href="login.html">Log In</a></button>
+              <button id="log-out" style="display: none;">Log Out</button>
+            </div>
+            <div class="add-collection" title="Create a new collection"> 
+              <button id="add-collection" style="display: none;">New Collection</button>
+            </div>
+          </div>
+        </div>
+
+          <div id="modal" class="modal">
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <h2>New Collection Creation</h2>
+              <input type="text" id="collection-name" placeholder="Enter Collection Name">
+              <button id="create-collection">Create</button>
+            </div>
+          </div>
+        </div>
+
+          <div id="edit-card-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Edit Flashcard</h2>
+                <label for="edit-card-question">Frontside</label>
+                <input type="text" id="edit-card-question" placeholder="Enter the question">
+                <label for="edit-card-answer">Backside</label>
+                <input type="text" id="edit-card-answer" placeholder="Enter the answer">
+                <button id="edit-card-apply">Save</button>
+            </div>
+          </div>
+
+
+          <div id="renameModal" class="modal">
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <h2>Rename Collection</h2>
+              <input type="text" id="newCollectionName" placeholder="Введите новое имя коллекции">
+              <button id="renameCollectionBtn">Apply</button>
+            </div>
+          </div>
+
+
+
+          <div class="buttons-card" id="buttons-card">
+            <div class="card-options">
+              <button id="return-to-main-page">←</button>
+              <button id="add-card">ADD</button>
+            </div>
+          </div>
+
+          <input type="hidden" id="active-collection-id">
+      
+      <div id="my-collections-container" class="collection-container">
+        <div class="collection" id="czech-collection">
+          <div class="collection-options">
+            <button>delete</button>
+            <button>rename</button>
+          </div>
+        </div>
+      </div>
+      <button id="add-collection" style="visibility: hidden;">New Collection</button>
+  
+
+    
+      <div class="my-card-container" id="my-card-container">
+      </div>
+      <div class="custom-card" id="czech-collection">
+        <div class="front-content" onclick="flipCard()">
+        </div>
+        <div class="back-content" onclick="flipCard()">
+        </div>
+      </div>
+    </div>
+
+
+      <div class="collection-container" id="collection-container">
+        <div class="collection" id="czech-collection2">
+          <button ></button>
+        </div>
+      </div>
+
+<div id="flashcard-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Add New Flashcard</h2>
+    <input type="text" id="flashcard-question" placeholder="Front Side">
+    <input type="text" id="flashcard-answer" placeholder="Back Side">
+    <input type="hidden" id="collection-id"> 
+    <button id="flashcard-apply">Apply</button>
+  </div>
+</div>
+
+
+      <div class="card-container" id="card-container" style="display: none;">
+          <div class="custom-card" id="czech-collection">
+            <div class="front-content" onclick="flipCard(this)">
+            </div>
+            <div class="back-content" onclick="flipCard(this)">
+            </div>
+          </div>
+      </div>
+
+
+        <script>
+
+          requirejs.config({
+          baseUrl: 'js', 
+          paths: {
+          'express': './express',
+          'body-parser': './body-parser',
+          'mongoose': './mongoose',
+          'cors': './cors',
+          }
+          });
+
+const cards = document.querySelectorAll('.custom-card');
+
+cards.forEach(card => {
+  card.addEventListener('click', function() {
+    this.classList.toggle('flipped-card'); 
+  });
+});
+
+  document.addEventListener('DOMContentLoaded', function() {
+  const renameModal = document.getElementById('renameModal');
+  const closeBtn = renameModal.querySelector('.close');
+  const renameCollectionBtn = document.getElementById('renameCollectionBtn');
+  
+  if (renameModal && closeBtn && renameCollectionBtn) {
+    renameCollectionBtn.addEventListener('click', function() {
+      renameModal.style.display = 'block';
+    });
+
+    closeBtn.addEventListener('click', function() {
+      renameModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+      if (event.target === renameModal) {
+        renameModal.style.display = 'none';
+      }
+    });
+
+    renameCollectionBtn.addEventListener('click', function() {
+      renameModal.style.display = 'none';
+    });
+  } else {
+    console.error('One or more elements not found.');
+  }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  const returnToMainPageBtn = document.getElementById('return-to-main-page');
+  
+  if (returnToMainPageBtn) {
+    returnToMainPageBtn.addEventListener('click', function() {
+      window.location.href = "index.html";
+    });
+  } else {
+    console.error('Return to Main Page button not found.');
+  }
+});
+
+
+function openModal() {
+  document.getElementById('modal').style.display = 'block';
+}
+
+document.querySelector('.close').addEventListener('click', function() {
+  document.getElementById('modal').style.display = 'none';
+});
+
+window.onclick = function(event) {
+  if (event.target == document.getElementById('modal')) {
+    document.getElementById('modal').style.display = 'none';
+  }
+}
+
+function closeModal() {
+  var modal = document.getElementById('modal');
+  modal.style.animation = 'zoom-out 0.6s'; 
+  setTimeout(function() {
+    modal.style.display = 'none';
+    modal.style.animation = ''; 
+  }, 600); 
+}
+
+
+</script>
+      <script src="script.js"></script>
+      <script src="auth.js"></script>
+      <script src="server.js"></script>
+      <script src="cards.js"></script>
+      <script src="state.js"></script>
+      <script type="module" src="main.js"></script>
+    </body>
+  </html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Mode</title>
+    <!-- <link rel="stylesheet" href="index.css"/> -->
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+    <div id="collection-selection" class="col-container">
+        <button class="arrow-back"><a href="index.html">←</a></button>
+        <h2>SELECT COLLECTION TO START</h2>
+        <div id="game-mode-collections" class="buttons-cont">
+        </div>
+    </div>
+
+    <div id="user-records" class="container">
+        <h2>Records</h2>
+        <div class="buttons">
+            <div id="clear-scores-container"></div>
+            <div id="scroll-controls">
+                <div id="scroll-left" class="scroll-arrow hidden">&lt;</div>
+                <div id="scroll-right" class="scroll-arrow">&gt;</div>
+            </div>
+        </div>
+        <div class="records-wrapper" id="records-wrapper">
+            <div id="records-view" class="records-table" style="height: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Collection</th>
+                            <th>Record</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-body"></tbody>
+                </table>
+            </div>
+            <div id="best-records-view" class="records-table" style="height: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Collection</th>
+                            <th>Best Record</th>
+                        </tr>
+                    </thead>
+                    <tbody id="best-records-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+
+    <div id="game-container" class="game-container" style="display: none;">
+        <div id="card-container" class="card-container"></div>
+        <input type="text" id="answer-input" placeholder="Enter Answer">
+        <button id="apply-answer-button">Apply</button>
+        <div id="score-counter">Right Answers: <span id="score">0</span></div>
+        <button id="return"><a href="gamemode.html">BACK TO THE MENU</a></button>
+    </div>
+
+    <div id="end-game-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>GAME OVER. YOUR FINAL SCORE: <span id="final-score"></span>.</p>
+            <button id="back-to-main-button">RETURNING TO THE MAIN PAGE</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const scrollLeft = document.getElementById('scroll-left');
+            const scrollRight = document.getElementById('scroll-right');
+            const recordsWrapper = document.getElementById('records-wrapper');
+
+            let currentPosition = 0;
+            const stepSize = 70; 
+
+            function updateArrows() {
+                if (currentPosition === 0) {
+                    scrollLeft.classList.add('hidden');
+                    scrollRight.classList.remove('hidden');
+                } else {
+                    scrollLeft.classList.remove('hidden');
+                    scrollRight.classList.add('hidden');
+                }
+            }
+
+            scrollRight.addEventListener('click', function () {
+                if (currentPosition > -50) {
+                    currentPosition -= stepSize;
+                    recordsWrapper.style.transform = `translateX(${currentPosition}%)`;
+                    updateArrows();
+                }
+            });
+
+            scrollLeft.addEventListener('click', function () {
+                if (currentPosition < 0) {
+                    currentPosition += stepSize;
+                    recordsWrapper.style.transform = `translateX(${currentPosition}%)`;
+                    updateArrows();
+                }
+            });
+
+            updateArrows();
+            loadRecords();
+            loadBestRecords();
+        });
+
+        async function loadRecords() {
+        }
+
+        async function loadBestRecords() {
+            try {
+                const response = await fetch('http://localhost:3000/scores/best');
+                if (response.ok) {
+                    const bestRecords = await response.json();
+                    renderBestRecords(bestRecords);
+                } else {
+                    console.error('Failed to fetch best records');
+                }
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        }
+
+        function renderBestRecords(records) {
+            const bestRecordsBody = document.getElementById('best-records-body');
+            bestRecordsBody.innerHTML = '';
+
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                const collectionCell = document.createElement('td');
+                collectionCell.textContent = record.collectionName;
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = record.maxScore;
+
+                row.appendChild(collectionCell);
+                row.appendChild(scoreCell);
+                bestRecordsBody.appendChild(row);
+            });
+        }
+
+    </script>
+    <script src="gamemode.js"></script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script src="requirejs-config.js" data-main="index.js"></script>
+    <script src="client.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap');
+
+        * {
+            font-family: Syne;
+        }
+        body {
+            background-color: #dfe4ea;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            width: 400px;
+            margin: auto auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: grid;
+        }
+
+        h2 {
+            margin-top: 1.5px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="submit"] {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #3c6382;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3c6382;
+        }
+
+        a {
+            text-decoration: none;
+            font: white;
+        }
+
+        button{
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            background-color: #3c6382;
+            padding: 0.8em 1.2em;
+            font-weight: 500;
+            border-radius: 0.4em;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>LOG INTO YOUR ACCOUNT</h2>
+        <form id="login-form">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" id="submit" value="Enter">
+        </form>
+        <button id="register-btn">Back to the Main Page</button>
+    </div>
+
+    <script>
+        requirejs.config({
+            baseUrl: 'js',
+            paths: {
+                'express': './express',
+                'body-parser': './body-parser',
+                'mongoose': './mongoose',
+                'cors': './cors'
+            }
+        });
+
+        document.getElementById("login-form").addEventListener("submit", function(event) {
+        event.preventDefault(); 
+
+        var formData = {
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value
+        };
+
+        var jsonData = JSON.stringify(formData);
+
+        fetch("http://localhost:3000/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: jsonData
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Authentication failed. Please check your credentials.");
+            }
+        })
+        .then(data => {
+            document.cookie = `token=${data.token}; path=/;`;
+            window.location.href = "/index.html";
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert(error.message);
+        });
+    });
+
+    document.getElementById("register-btn").addEventListener("click", function() {
+        window.location.href = "/index.html";
+    });
+    </script>
+
+</body>
+</html>
