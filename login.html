@@ -135,7 +135,7 @@
         })
         .then(data => {
             document.cookie = `token=${data.token}; path=/;`;
-            window.location.href = "/flashcard-application/";
+            window.location.href = "https://ssashimii.github.io/flashcard-application/index.html";
         })
         .catch(error => {
             console.error("Error:", error);
@@ -144,7 +144,7 @@
     });
 
     document.getElementById("register-btn").addEventListener("click", function() {
-        window.location.href = "/flashcard-application/";
+        window.location.href = "https://ssashimii.github.io/flashcard-application/index.html";
     });
     </script>
 
